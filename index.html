@@ -27,7 +27,7 @@
             width: 100%;
             text-align: center;
         }
-        .input-group { /* Renamed from slider-group */
+        .input-group {
             margin-bottom: 25px;
             text-align: left;
         }
@@ -37,7 +37,7 @@
             margin-bottom: 8px;
             display: block;
         }
-        input[type="number"] { /* Styling for number inputs */
+        input[type="number"] {
             width: 100%;
             padding: 10px 15px;
             border: 1px solid #d1d5db; /* Light gray border */
@@ -52,7 +52,6 @@
             border-color: #3b82f6; /* Blue border on focus */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Blue shadow on focus */
         }
-        /* Removed #profitLoss specific styling as it's now integrated */
         .positive {
             color: #10b981; /* Green for profit */
         }
@@ -77,20 +76,28 @@
         .summary-item strong {
             color: #1f2937;
         }
-        .total-line { /* New class for total lines like Total Shopify Costs and Profit/Loss */
+        /* total-line for section separation */
+        .total-line {
             border-top: 1px solid #e5e7eb;
             padding-top: 10px;
             margin-top: 10px;
+        }
+        .section-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: #1f2937;
+            margin-bottom: 10px;
+            margin-top: 15px; /* Added margin to separate sections */
         }
-        .final-profit-loss { /* Specific styling for the final profit/loss line */
-            font-size: 1.8rem; /* Larger font for final profit/loss */
+        .section-title:first-of-type {
+            margin-top: 0; /* No top margin for the very first section title */
+        }
+        .final-profit-loss {
+            font-size: 1.8rem;
             font-weight: 800;
             margin-top: 20px;
             padding-top: 15px;
-            border-top: 2px solid #cbd5e1; /* Thicker border for separation */
+            border-top: 2px solid #cbd5e1;
         }
     </style>
 </head>
@@ -131,11 +138,15 @@
         <!-- Consolidated Financial Summary Display -->
         <div class="financial-summary">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Financial Summary</h2>
+
+            <h3 class="section-title">Revenue</h3>
             <div class="summary-item">
                 <span>Total Revenue:</span>
                 <span id="totalRevenueDisplay">$0.00</span>
             </div>
-            <div class="summary-item total-line">
+
+            <h3 class="section-title total-line">Expenses</h3>
+            <div class="summary-item">
                 <span>Cost of Goods Sold:</span>
                 <span id="costOfGoodsSoldDisplay">$0.00</span>
             </div>
@@ -159,10 +170,7 @@
                 <span>Monthly Labor Cost:</span>
                 <span id="laborCostDisplay">$0.00</span>
             </div>
-            <div class="summary-item total-line">
-                <span>Total Monthly Shopify Costs:</span>
-                <span id="totalShopifyCosts">$0.00</span>
-            </div>
+
             <div class="summary-item final-profit-loss">
                 <span>Estimated Monthly Profit/Loss:</span>
                 <span id="profitLoss">$0.00</span>
@@ -176,7 +184,7 @@
         const wholesalePriceInput = document.getElementById('wholesalePrice');
         const unitsSoldInput = document.getElementById('unitsSold');
         const advertisingSpendingInput = document.getElementById('advertisingSpending');
-        const laborCostInput = document.getElementById('laborCost'); // New input
+        const laborCostInput = document.getElementById('laborCost');
 
         // Elements for financial summary
         const totalRevenueDisplay = document.getElementById('totalRevenueDisplay');
@@ -185,8 +193,7 @@
         const flatFeeCostsDisplay = document.getElementById('flatFeeCosts');
         const percentageCostsDisplay = document.getElementById('percentageCosts');
         const advertisingSpendingDisplay = document.getElementById('advertisingSpendingDisplay');
-        const laborCostDisplay = document.getElementById('laborCostDisplay'); // New display
-        const totalShopifyCostsDisplay = document.getElementById('totalShopifyCosts');
+        const laborCostDisplay = document.getElementById('laborCostDisplay');
         const profitLossDisplay = document.getElementById('profitLoss');
 
         // Shopify Fees
@@ -199,11 +206,11 @@
          */
         function calculateProfitLoss() {
             // Get current values from input fields
-            const retailPrice = parseFloat(retailPriceInput.value) || 0; // Default to 0 if empty or invalid
+            const retailPrice = parseFloat(retailPriceInput.value) || 0;
             const wholesalePrice = parseFloat(wholesalePriceInput.value) || 0;
             const unitsSold = parseInt(unitsSoldInput.value) || 0;
             const advertisingSpending = parseFloat(advertisingSpendingInput.value) || 0;
-            const laborCost = parseFloat(laborCostInput.value) || 0; // Get labor cost
+            const laborCost = parseFloat(laborCostInput.value) || 0;
 
             // Calculate total revenue
             const totalRevenue = retailPrice * unitsSold;
@@ -215,10 +222,10 @@
             const totalFlatFeeTransactionCosts = TRANSACTION_FLAT_FEE * unitsSold;
             const totalPercentageTransactionCosts = (retailPrice * TRANSACTION_PERCENTAGE) * unitsSold;
 
-            // Calculate total Shopify transaction fees
+            // Calculate total Shopify transaction fees (for internal calculation, not displayed explicitly)
             const totalTransactionFees = totalFlatFeeTransactionCosts + totalPercentageTransactionCosts;
 
-            // Calculate total monthly Shopify costs
+            // Calculate total monthly Shopify costs (for internal calculation, not displayed explicitly)
             const totalMonthlyShopifyCosts = SHOPIFY_MONTHLY_FEE + totalTransactionFees;
 
             // Calculate total expenses (including COGS, all Shopify costs, advertising, and labor)
@@ -234,8 +241,7 @@
             flatFeeCostsDisplay.textContent = `$${totalFlatFeeTransactionCosts.toFixed(2)}`;
             percentageCostsDisplay.textContent = `$${totalPercentageTransactionCosts.toFixed(2)}`;
             advertisingSpendingDisplay.textContent = `$${advertisingSpending.toFixed(2)}`;
-            laborCostDisplay.textContent = `$${laborCost.toFixed(2)}`; // Display labor cost
-            totalShopifyCostsDisplay.textContent = `$${totalMonthlyShopifyCosts.toFixed(2)}`;
+            laborCostDisplay.textContent = `$${laborCost.toFixed(2)}`;
 
             // Display the profit/loss result with appropriate styling within the summary
             profitLossDisplay.textContent = `$${profitLoss.toFixed(2)}`;
@@ -249,12 +255,11 @@
         }
 
         // Add event listeners to input fields to trigger calculation on change
-        // Using 'input' event for real-time updates as user types
         retailPriceInput.addEventListener('input', calculateProfitLoss);
         wholesalePriceInput.addEventListener('input', calculateProfitLoss);
         unitsSoldInput.addEventListener('input', calculateProfitLoss);
         advertisingSpendingInput.addEventListener('input', calculateProfitLoss);
-        laborCostInput.addEventListener('input', calculateProfitLoss); // New event listener
+        laborCostInput.addEventListener('input', calculateProfitLoss);
 
         // Perform initial calculation when the page loads
         window.onload = calculateProfitLoss;
