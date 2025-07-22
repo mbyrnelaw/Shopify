@@ -122,6 +122,12 @@
             <input type="number" id="advertisingSpending" min="0" value="0.00" step="0.01">
         </div>
 
+        <!-- Labor Cost Input -->
+        <div class="input-group">
+            <label for="laborCost">Monthly Labor Cost ($):</label>
+            <input type="number" id="laborCost" min="0" value="0.00" step="0.01">
+        </div>
+
         <!-- Consolidated Financial Summary Display -->
         <div class="financial-summary">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Financial Summary</h2>
@@ -149,6 +155,10 @@
                 <span>Monthly Advertising Spending:</span>
                 <span id="advertisingSpendingDisplay">$0.00</span>
             </div>
+            <div class="summary-item">
+                <span>Monthly Labor Cost:</span>
+                <span id="laborCostDisplay">$0.00</span>
+            </div>
             <div class="summary-item total-line">
                 <span>Total Monthly Shopify Costs:</span>
                 <span id="totalShopifyCosts">$0.00</span>
@@ -165,7 +175,8 @@
         const retailPriceInput = document.getElementById('retailPrice');
         const wholesalePriceInput = document.getElementById('wholesalePrice');
         const unitsSoldInput = document.getElementById('unitsSold');
-        const advertisingSpendingInput = document.getElementById('advertisingSpending'); // New input
+        const advertisingSpendingInput = document.getElementById('advertisingSpending');
+        const laborCostInput = document.getElementById('laborCost'); // New input
 
         // Elements for financial summary
         const totalRevenueDisplay = document.getElementById('totalRevenueDisplay');
@@ -173,7 +184,8 @@
         const shopifyHostingCostDisplay = document.getElementById('shopifyHostingCost');
         const flatFeeCostsDisplay = document.getElementById('flatFeeCosts');
         const percentageCostsDisplay = document.getElementById('percentageCosts');
-        const advertisingSpendingDisplay = document.getElementById('advertisingSpendingDisplay'); // New display
+        const advertisingSpendingDisplay = document.getElementById('advertisingSpendingDisplay');
+        const laborCostDisplay = document.getElementById('laborCostDisplay'); // New display
         const totalShopifyCostsDisplay = document.getElementById('totalShopifyCosts');
         const profitLossDisplay = document.getElementById('profitLoss');
 
@@ -190,7 +202,8 @@
             const retailPrice = parseFloat(retailPriceInput.value) || 0; // Default to 0 if empty or invalid
             const wholesalePrice = parseFloat(wholesalePriceInput.value) || 0;
             const unitsSold = parseInt(unitsSoldInput.value) || 0;
-            const advertisingSpending = parseFloat(advertisingSpendingInput.value) || 0; // Get advertising spending
+            const advertisingSpending = parseFloat(advertisingSpendingInput.value) || 0;
+            const laborCost = parseFloat(laborCostInput.value) || 0; // Get labor cost
 
             // Calculate total revenue
             const totalRevenue = retailPrice * unitsSold;
@@ -208,8 +221,8 @@
             // Calculate total monthly Shopify costs
             const totalMonthlyShopifyCosts = SHOPIFY_MONTHLY_FEE + totalTransactionFees;
 
-            // Calculate total expenses (including COGS, all Shopify costs, and advertising)
-            const totalExpenses = totalMonthlyShopifyCosts + costOfGoodsSold + advertisingSpending;
+            // Calculate total expenses (including COGS, all Shopify costs, advertising, and labor)
+            const totalExpenses = totalMonthlyShopifyCosts + costOfGoodsSold + advertisingSpending + laborCost;
 
             // Calculate profit/loss
             const profitLoss = totalRevenue - totalExpenses;
@@ -220,7 +233,8 @@
             shopifyHostingCostDisplay.textContent = `$${SHOPIFY_MONTHLY_FEE.toFixed(2)}`;
             flatFeeCostsDisplay.textContent = `$${totalFlatFeeTransactionCosts.toFixed(2)}`;
             percentageCostsDisplay.textContent = `$${totalPercentageTransactionCosts.toFixed(2)}`;
-            advertisingSpendingDisplay.textContent = `$${advertisingSpending.toFixed(2)}`; // Display advertising
+            advertisingSpendingDisplay.textContent = `$${advertisingSpending.toFixed(2)}`;
+            laborCostDisplay.textContent = `$${laborCost.toFixed(2)}`; // Display labor cost
             totalShopifyCostsDisplay.textContent = `$${totalMonthlyShopifyCosts.toFixed(2)}`;
 
             // Display the profit/loss result with appropriate styling within the summary
@@ -239,7 +253,8 @@
         retailPriceInput.addEventListener('input', calculateProfitLoss);
         wholesalePriceInput.addEventListener('input', calculateProfitLoss);
         unitsSoldInput.addEventListener('input', calculateProfitLoss);
-        advertisingSpendingInput.addEventListener('input', calculateProfitLoss); // New event listener
+        advertisingSpendingInput.addEventListener('input', calculateProfitLoss);
+        laborCostInput.addEventListener('input', calculateProfitLoss); // New event listener
 
         // Perform initial calculation when the page loads
         window.onload = calculateProfitLoss;
