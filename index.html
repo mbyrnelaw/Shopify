@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom styles for sliders and overall appearance */
+        /* Custom styles for inputs and overall appearance */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* Light gray background */
@@ -27,61 +27,30 @@
             width: 100%;
             text-align: center;
         }
-        .slider-group {
+        .input-group { /* Renamed from slider-group */
             margin-bottom: 25px;
             text-align: left;
         }
-        .slider-group label {
+        .input-group label {
             font-weight: 600;
             color: #374151; /* Darker gray for labels */
             margin-bottom: 8px;
             display: block;
         }
-        input[type="range"] {
+        input[type="number"] { /* Styling for number inputs */
             width: 100%;
-            height: 8px;
-            background: #d1d5db; /* Light gray track */
-            border-radius: 5px;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db; /* Light gray border */
+            border-radius: 8px; /* Rounded corners for inputs */
+            font-size: 1rem;
+            color: #374151;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input[type="number"]:focus {
             outline: none;
-            -webkit-appearance: none; /* Remove default styling for Chrome/Safari */
-            appearance: none;
-            cursor: pointer;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #3b82f6; /* Blue thumb */
-            cursor: grab;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: background 0.2s ease-in-out;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #3b82f6; /* Blue thumb */
-            cursor: grab;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: background 0.2s ease-in-out;
-        }
-        input[type="range"]::-webkit-slider-thumb:active {
-            cursor: grabbing;
-            background: #2563eb; /* Darker blue on active */
-        }
-        input[type="range"]::-moz-range-thumb:active {
-            cursor: grabbing;
-            background: #2563eb; /* Darker blue on active */
-        }
-        .value-display {
-            font-weight: 500;
-            color: #4b5563; /* Medium gray for values */
-            margin-left: 10px;
-            min-width: 60px; /* Ensure consistent width */
-            display: inline-block;
-            text-align: right;
+            border-color: #3b82f6; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Blue shadow on focus */
         }
         /* Removed #profitLoss specific styling as it's now integrated */
         .positive {
@@ -129,22 +98,28 @@
     <div class="container">
         <h1 class="text-3xl font-bold text-gray-800 mb-8">Shopify Profit Calculator</h1>
 
-        <!-- Retail Price Slider -->
-        <div class="slider-group">
-            <label for="retailPrice">Retail Price per Widget: <span id="retailPriceValue" class="value-display">$0.00</span></label>
-            <input type="range" id="retailPrice" min="1" max="100" value="25" step="0.01">
+        <!-- Retail Price Input -->
+        <div class="input-group">
+            <label for="retailPrice">Retail Price per Widget ($):</label>
+            <input type="number" id="retailPrice" min="0.01" value="25.00" step="0.01">
         </div>
 
-        <!-- Wholesale Price Slider -->
-        <div class="slider-group">
-            <label for="wholesalePrice">Wholesale Price per Widget: <span id="wholesalePriceValue" class="value-display">$0.00</span></label>
-            <input type="range" id="wholesalePrice" min="0.1" max="50" value="10" step="0.01">
+        <!-- Wholesale Price Input -->
+        <div class="input-group">
+            <label for="wholesalePrice">Wholesale Price per Widget ($):</label>
+            <input type="number" id="wholesalePrice" min="0.01" value="10.00" step="0.01">
         </div>
 
-        <!-- Units Sold Slider -->
-        <div class="slider-group">
-            <label for="unitsSold">Units Sold per Month: <span id="unitsSoldValue" class="value-display">0</span></label>
-            <input type="range" id="unitsSold" min="0" max="1000" value="100" step="1">
+        <!-- Units Sold Input -->
+        <div class="input-group">
+            <label for="unitsSold">Units Sold per Month:</label>
+            <input type="number" id="unitsSold" min="0" value="100" step="1">
+        </div>
+
+        <!-- Advertising Spending Input -->
+        <div class="input-group">
+            <label for="advertisingSpending">Monthly Advertising Spending ($):</label>
+            <input type="number" id="advertisingSpending" min="0" value="0.00" step="0.01">
         </div>
 
         <!-- Consolidated Financial Summary Display -->
@@ -170,6 +145,10 @@
                 <span>Percentage Transaction Costs:</span>
                 <span id="percentageCosts">$0.00</span>
             </div>
+            <div class="summary-item">
+                <span>Monthly Advertising Spending:</span>
+                <span id="advertisingSpendingDisplay">$0.00</span>
+            </div>
             <div class="summary-item total-line">
                 <span>Total Monthly Shopify Costs:</span>
                 <span id="totalShopifyCosts">$0.00</span>
@@ -183,13 +162,10 @@
 
     <script>
         // Get references to DOM elements
-        const retailPriceSlider = document.getElementById('retailPrice');
-        const wholesalePriceSlider = document.getElementById('wholesalePrice');
-        const unitsSoldSlider = document.getElementById('unitsSold');
-
-        const retailPriceValueSpan = document.getElementById('retailPriceValue');
-        const wholesalePriceValueSpan = document.getElementById('wholesalePriceValue');
-        const unitsSoldValueSpan = document.getElementById('unitsSoldValue');
+        const retailPriceInput = document.getElementById('retailPrice');
+        const wholesalePriceInput = document.getElementById('wholesalePrice');
+        const unitsSoldInput = document.getElementById('unitsSold');
+        const advertisingSpendingInput = document.getElementById('advertisingSpending'); // New input
 
         // Elements for financial summary
         const totalRevenueDisplay = document.getElementById('totalRevenueDisplay');
@@ -197,9 +173,9 @@
         const shopifyHostingCostDisplay = document.getElementById('shopifyHostingCost');
         const flatFeeCostsDisplay = document.getElementById('flatFeeCosts');
         const percentageCostsDisplay = document.getElementById('percentageCosts');
+        const advertisingSpendingDisplay = document.getElementById('advertisingSpendingDisplay'); // New display
         const totalShopifyCostsDisplay = document.getElementById('totalShopifyCosts');
-        const profitLossDisplay = document.getElementById('profitLoss'); // Now inside financial summary
-
+        const profitLossDisplay = document.getElementById('profitLoss');
 
         // Shopify Fees
         const SHOPIFY_MONTHLY_FEE = 40; // $40 per month
@@ -210,15 +186,11 @@
          * Calculates the estimated monthly profit or loss based on the provided inputs and Shopify fees.
          */
         function calculateProfitLoss() {
-            // Get current values from sliders
-            const retailPrice = parseFloat(retailPriceSlider.value);
-            const wholesalePrice = parseFloat(wholesalePriceSlider.value);
-            const unitsSold = parseInt(unitsSoldSlider.value);
-
-            // Update display spans for slider values
-            retailPriceValueSpan.textContent = `$${retailPrice.toFixed(2)}`;
-            wholesalePriceValueSpan.textContent = `$${wholesalePrice.toFixed(2)}`;
-            unitsSoldValueSpan.textContent = unitsSold;
+            // Get current values from input fields
+            const retailPrice = parseFloat(retailPriceInput.value) || 0; // Default to 0 if empty or invalid
+            const wholesalePrice = parseFloat(wholesalePriceInput.value) || 0;
+            const unitsSold = parseInt(unitsSoldInput.value) || 0;
+            const advertisingSpending = parseFloat(advertisingSpendingInput.value) || 0; // Get advertising spending
 
             // Calculate total revenue
             const totalRevenue = retailPrice * unitsSold;
@@ -236,8 +208,8 @@
             // Calculate total monthly Shopify costs
             const totalMonthlyShopifyCosts = SHOPIFY_MONTHLY_FEE + totalTransactionFees;
 
-            // Calculate total expenses (including COGS and all Shopify costs)
-            const totalExpenses = totalMonthlyShopifyCosts + costOfGoodsSold;
+            // Calculate total expenses (including COGS, all Shopify costs, and advertising)
+            const totalExpenses = totalMonthlyShopifyCosts + costOfGoodsSold + advertisingSpending;
 
             // Calculate profit/loss
             const profitLoss = totalRevenue - totalExpenses;
@@ -248,6 +220,7 @@
             shopifyHostingCostDisplay.textContent = `$${SHOPIFY_MONTHLY_FEE.toFixed(2)}`;
             flatFeeCostsDisplay.textContent = `$${totalFlatFeeTransactionCosts.toFixed(2)}`;
             percentageCostsDisplay.textContent = `$${totalPercentageTransactionCosts.toFixed(2)}`;
+            advertisingSpendingDisplay.textContent = `$${advertisingSpending.toFixed(2)}`; // Display advertising
             totalShopifyCostsDisplay.textContent = `$${totalMonthlyShopifyCosts.toFixed(2)}`;
 
             // Display the profit/loss result with appropriate styling within the summary
@@ -261,10 +234,12 @@
             }
         }
 
-        // Add event listeners to sliders to trigger calculation on change
-        retailPriceSlider.addEventListener('input', calculateProfitLoss);
-        wholesalePriceSlider.addEventListener('input', calculateProfitLoss);
-        unitsSoldSlider.addEventListener('input', calculateProfitLoss);
+        // Add event listeners to input fields to trigger calculation on change
+        // Using 'input' event for real-time updates as user types
+        retailPriceInput.addEventListener('input', calculateProfitLoss);
+        wholesalePriceInput.addEventListener('input', calculateProfitLoss);
+        unitsSoldInput.addEventListener('input', calculateProfitLoss);
+        advertisingSpendingInput.addEventListener('input', calculateProfitLoss); // New event listener
 
         // Perform initial calculation when the page loads
         window.onload = calculateProfitLoss;
